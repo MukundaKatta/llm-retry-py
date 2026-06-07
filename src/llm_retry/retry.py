@@ -96,9 +96,7 @@ class RetryExhausted(Exception):
     def __init__(self, last_error: BaseException, attempts: int) -> None:
         self.last_error = last_error
         self.attempts = attempts
-        super().__init__(
-            f"retry exhausted after {attempts} attempts: {last_error!r}"
-        )
+        super().__init__(f"retry exhausted after {attempts} attempts: {last_error!r}")
 
 
 # Back-compat alias matching the Rust enum name. The Rust crate has a

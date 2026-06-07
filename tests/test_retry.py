@@ -228,16 +228,17 @@ def test_retry_predicate_can_inspect_exception_attrs():
     calls = [0]
 
     def op():
-            calls[0] += 1
-            if calls[0] < 2:
-                raise StatusError(503)
-            return "ok"
+        calls[0] += 1
+        if calls[0] < 2:
+            raise StatusError(503)
+        return "ok"
 
     result = retry(
         op,
         policy=fast_policy(),
-        should_retry=lambda e: isinstance(e, StatusError)
-        and predicates.is_http_status_retryable(e.status),
+        should_retry=lambda e: (
+            isinstance(e, StatusError) and predicates.is_http_status_retryable(e.status)
+        ),
         sleep=RecordingSleep(),
     )
     assert result == "ok"
@@ -323,9 +324,7 @@ def test_anthropic_predicate_matches_codes():
     assert predicates.is_anthropic_retryable("api_error")
     assert predicates.is_anthropic_retryable("timeout")
     # substring match
-    assert predicates.is_anthropic_retryable(
-        "Error: rate_limit_error occurred for org_xxx"
-    )
+    assert predicates.is_anthropic_retryable("Error: rate_limit_error occurred for org_xxx")
 
 
 def test_anthropic_predicate_rejects_unsafe():
